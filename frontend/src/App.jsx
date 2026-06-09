@@ -211,8 +211,8 @@ const fetchFailures = async () => {
     setLoading(true);
 
     const res = await axios.get(
-      "http://localhost:5000/api/failures"
-    );
+  "https://railway-telecom-backend.onrender.com/api/failures"
+);
 
     setFailures(res.data.reverse());
 
@@ -225,8 +225,8 @@ const fetchFailures = async () => {
 const fetchAdmins = async () => {
   try {
     const res = await axios.get(
-      "http://localhost:5000/api/admins"
-    );
+  "https://railway-telecom-backend.onrender.com/api/admins"
+);
 
     setAdmins(res.data);
   } catch (error) {
@@ -330,7 +330,7 @@ const addAdmin = async () => {
 
   try {
     await axios.post(
-      "http://localhost:5000/api/admins",
+      "https://railway-telecom-backend.onrender.com/api/admins",
       {
         username: newAdminUser,
         password: newAdminPass,
@@ -358,7 +358,7 @@ const addFailure = async () => {
 
   try {
     await axios.post(
-      "http://localhost:5000/api/failures",
+      "http://railway-telecom-backend.onrender.com/api/failures",
       {
         title: asset,
         location,
@@ -401,7 +401,7 @@ const downloadPDF = () => {
  const deleteFailure = async (id) => {
   try {
     await axios.delete(
-      `http://localhost:5000/api/failures/${id}`
+      `https://railway-telecom-backend.onrender.com/api/failures/${id}`
     );
 
     fetchFailures();
@@ -415,7 +415,7 @@ const downloadPDF = () => {
 const updateStatus = async (id) => {
   try {
     await axios.put(
-      `http://localhost:5000/api/failures/${id}`
+      `https://railway-telecom-backend.onrender.com/api/failures/${id}`
     );
 
     fetchFailures();
