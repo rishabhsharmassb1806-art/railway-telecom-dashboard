@@ -358,7 +358,7 @@ const addFailure = async () => {
 
   try {
     await axios.post(
-      "http://railway-telecom-backend.onrender.com/api/failures",
+      "https://railway-telecom-backend.onrender.com/api/failures",
       {
         title: asset,
         location,
