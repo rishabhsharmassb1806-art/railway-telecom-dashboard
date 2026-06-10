@@ -32,5 +32,22 @@ router.post("/", async (req, res) => {
     });
   }
 });
+// DELETE admin
 
+router.delete("/:id", async (req, res) => {
+  try {
+    const deletedAdmin = await Admin.findByIdAndDelete(
+      req.params.id
+    );
+
+    res.json({
+      message: "Admin Deleted",
+      deletedAdmin,
+    });
+  } catch (error) {
+    res.status(500).json({
+      message: error.message,
+    });
+  }
+});
 module.exports = router;
