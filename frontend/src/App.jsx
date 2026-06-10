@@ -348,7 +348,23 @@ const addAdmin = async () => {
     alert("Failed to Add Admin");
   }
 };
+const deleteAdmin = async (id) => {
+  try {
+    await axios.delete(
+      `https://railway-telecom-backend.onrender.com/api/admins/${id}`
+    );
 
+    setAdmins(
+      admins.filter(
+        (admin) => admin._id !== id
+      )
+    );
+
+    alert("Admin Deleted");
+  } catch (error) {
+    console.log(error);
+  }
+};
 
 const addFailure = async () => {
   if (!asset || !location) {
@@ -692,33 +708,32 @@ const recentFailures = [...failures]
 
 {admins.map((admin, index) => (
 <div
-  key={index}
+  key={admin._id}
   className="admin-item"
 >
     <span className="admin-name">
   👤 {admin.username}
 </span>
 
-   <button
+<button
   className="delete-admin-btn"
   onClick={() => {
-        const updatedAdmins = admins.filter(
-          (_, i) => i !== index
-        );
+    console.log("Admin Object:", admin);
+    console.log("Admin ID:", admin._id);
 
-        setAdmins(updatedAdmins);
-      }}
-      style={{
-        background: "#ef4444",
-        color: "white",
-        border: "none",
-        padding: "5px 10px",
-        borderRadius: "5px",
-        cursor: "pointer",
-      }}
-    >
-      Delete
-    </button>
+    deleteAdmin(admin._id);
+  }}
+  style={{
+    background: "#ef4444",
+    color: "white",
+    border: "none",
+    padding: "5px 10px",
+    borderRadius: "5px",
+    cursor: "pointer",
+  }}
+>
+  Delete
+</button>
   </div>
 ))}
       <button
