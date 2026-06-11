@@ -1,9 +1,10 @@
 
-
 import "./App.css";
 import jsPDF from "jspdf";
 import autoTable from "jspdf-autotable";
 import axios from "axios";
+import * as XLSX from "xlsx";
+import { saveAs } from "file-saver";
 import { useState, useEffect } from "react";
 
 import {
@@ -29,6 +30,7 @@ const [locationSuggestions, setLocationSuggestions] = useState([]);
 const [activeFilter, setActiveFilter] = useState("");
 const [showHelpDesk, setShowHelpDesk] = useState(false);
 const [searchSuggestions, setSearchSuggestions] = useState([]);
+const [showSplash, setShowSplash] = useState(true);
 const [newAdminPass, setNewAdminPass] = useState("");
 const [loading, setLoading] = useState(true);
 const telecomAssets = [
@@ -263,6 +265,13 @@ useEffect(() => {
     document.body.style.background = "#f1f5f9";
   }
 }, [darkMode]);
+useEffect(() => {
+  const timer = setTimeout(() => {
+    setShowSplash(false);
+  }, 3000);
+
+  return () => clearTimeout(timer);
+}, []);
 const [password, setPassword] = useState("");
   const [asset, setAsset] = useState("");
 const [location, setLocation] = useState("");
@@ -414,6 +423,48 @@ const downloadPDF = () => {
 
   doc.save("Telecom_Failure_Report.pdf");
 };
+const downloadExcel = () => {
+  const excelData = failures.map((failure) => ({
+    Asset: failure.title,
+    Location: failure.location,
+    Severity: failure.severity,
+    Status: failure.status,
+    Date: new Date(
+      failure.createdAt
+    ).toLocaleDateString(),
+  }));
+
+  const worksheet =
+    XLSX.utils.json_to_sheet(excelData);
+
+  const workbook =
+    XLSX.utils.book_new();
+
+  XLSX.utils.book_append_sheet(
+    workbook,
+    worksheet,
+    "Failures"
+  );
+
+  const excelBuffer =
+    XLSX.write(workbook, {
+      bookType: "xlsx",
+      type: "array",
+    });
+
+  const fileData = new Blob(
+    [excelBuffer],
+    {
+      type:
+        "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+    }
+  );
+
+  saveAs(
+    fileData,
+    "Railway_Failure_Report.xlsx"
+  );
+};
  const deleteFailure = async (id) => {
   try {
     await axios.delete(
@@ -498,7 +549,27 @@ const recentFailures = [...failures]
   )
   .slice(0, 5);
   const COLORS = ["#22c55e", "#ef4444", "#f59e0b"];
+if (showSplash) {
+  return (
+    <div className="premium-splash">
+      <div className="premium-overlay">
+        
+      <div className="loading-wrapper">
+        <div className="loading-container">
+          <div className="loading-fill"></div>
+        </div>
+        <div className="loading-text">
+  Loading Dashboard...
+</div>
+      </div>
 
+
+
+      </div>
+    </div>
+  );
+}
+   
   return (
     <div
   className={`container ${
@@ -585,8 +656,14 @@ const recentFailures = [...failures]
   onClick={downloadPDF}
   className="sidebar-download-btn"
 >
-  📄 Download Failure Report
+📄 PDF Report
 </button>
+ <button
+    onClick={downloadExcel}
+    className="sidebar-download-btn"
+  > 📈 Excel Report
+  </button>
+
 </div>
 
 <li
