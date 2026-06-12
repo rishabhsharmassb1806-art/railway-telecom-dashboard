@@ -32,6 +32,7 @@ const [showHelpDesk, setShowHelpDesk] = useState(false);
 const [searchSuggestions, setSearchSuggestions] = useState([]);
 const [showSplash, setShowSplash] = useState(true);
 const [newAdminPass, setNewAdminPass] = useState("");
+const [excelFile, setExcelFile] = useState(null);
 const [loading, setLoading] = useState(true);
 const telecomAssets = [
   "OFC",
@@ -402,6 +403,31 @@ const addFailure = async () => {
   } catch (error) {
     console.error(error);
     alert("Error Adding Failure");
+  }
+};
+const uploadExcel = async () => {
+  if (!excelFile) {
+    alert("Select an Excel File");
+    return;
+  }
+
+  const formData = new FormData();
+  formData.append("file", excelFile);
+
+  try {
+    const res = await axios.post(
+      "https://railway-telecom-backend.onrender.com/api/failures/upload-excel",
+      formData
+    );
+
+    alert(
+      `${res.data.count} Failures Imported Successfully`
+    );
+
+    fetchFailures();
+  } catch (error) {
+    console.error(error);
+    alert("Excel Upload Failed");
   }
 };
 const downloadPDF = () => {
@@ -1187,6 +1213,17 @@ setAssetSuggestions(matches);
     <button onClick={addFailure}>
       ➕ Save Failure
     </button>
+    <input
+  type="file"
+  accept=".xlsx,.xls"
+  onChange={(e) =>
+    setExcelFile(e.target.files[0])
+  }
+/>
+
+<button onClick={uploadExcel}>
+  📤 Upload Excel
+</button>
   </div>
 </div>
 )}
