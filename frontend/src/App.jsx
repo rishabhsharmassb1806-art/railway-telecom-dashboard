@@ -34,6 +34,8 @@ const [showSplash, setShowSplash] = useState(true);
 const [newAdminPass, setNewAdminPass] = useState("");
 const [excelFile, setExcelFile] = useState(null);
 const [loading, setLoading] = useState(true);
+const [section, setSection] = useState("");
+const [closingDate, setClosingDate] = useState("");
 const telecomAssets = [
   "OFC",
   "Signal Cable",
@@ -377,28 +379,31 @@ const deleteAdmin = async (id) => {
 };
 
 const addFailure = async () => {
-  if (!asset || !location) {
+if (!asset || !location || !section) {
     alert("Please fill all fields");
     return;
   }
 
   try {
-    await axios.post(
-      "https://railway-telecom-backend.onrender.com/api/failures",
-      {
-        title: asset,
-        location,
-        severity,
-        status: "Open",
-      }
-    );
+   await axios.post(
+  "https://railway-telecom-backend.onrender.com/api/failures",
+  {
+    title: asset,          // Main Cause
+    location,             // Station
+    section,
+    closingDate,
+    severity,
+    status: "Open",
+  }
+);
 
     fetchFailures();
 
-    setAsset("");
-    setLocation("");
-    setSeverity("Low");
-
+   setAsset("");
+setLocation("");
+setSection("");
+setClosingDate("");
+setSeverity("Low");
     alert("Failure Added Successfully");
   } catch (error) {
     console.error(error);
@@ -1118,7 +1123,7 @@ onChange={(e) => {
    <div className="asset-wrapper">
 <input
   type="text"
-  placeholder="Asset Name"
+  placeholder="Main Cause"
   value={asset}
   onChange={(e) => {
    const value = e.target.value;
@@ -1158,67 +1163,77 @@ setAssetSuggestions(matches);
 )}
 </div>
 <div className="location-wrapper">
+  <input
+    type="text"
+    placeholder="Station"
+    value={location}
+    onChange={(e) => {
+      const value = e.target.value;
 
-   <input
-  type="text"
-  placeholder="Location"
-  value={location}
- onChange={(e) => {
-  const value = e.target.value;
+      setLocation(value);
 
-  setLocation(value);
+      if (value.trim() === "") {
+        setLocationSuggestions([]);
+        return;
+      }
 
-  if (value.trim() === "") {
-    setLocationSuggestions([]);
-    return;
-  }
+      const locationMatches = telecomLocations.filter((item) =>
+        item.toLowerCase().includes(value.toLowerCase())
+      );
 
-  const locationMatches = telecomLocations.filter((item) =>
-    item.toLowerCase().includes(value.toLowerCase())
-  );
+      setLocationSuggestions(locationMatches);
+    }}
+  />
 
-
-
-  setLocationSuggestions(locationMatches);
-}}
-/>
-{locationSuggestions.length > 0 && location !== "" && (
-  <div className="suggestions-box">
-    {locationSuggestions.map((item, index) => (
-      <div
-        key={index}
-        className="suggestion-item"
-        onClick={() => {
-          setLocation(item);
-          setLocationSuggestions([]);
-        }}
-      >
-        {item}
-      </div>
-    ))}
-  </div>
-)}
+  {locationSuggestions.length > 0 && location !== "" && (
+    <div className="suggestions-box">
+      {locationSuggestions.map((item, index) => (
+        <div
+          key={index}
+          className="suggestion-item"
+          onClick={() => {
+            setLocation(item);
+            setLocationSuggestions([]);
+          }}
+        >
+          {item}
+        </div>
+      ))}
+    </div>
+  )}
 </div>
 
-    <select
-      value={severity}
-      onChange={(e) => setSeverity(e.target.value)}
-    >
-      <option>Critical</option>
-      <option>High</option>
-      <option>Medium</option>
-      <option>Low</option>
-    </select>
+<input
+  type="text"
+  placeholder="Section"
+  value={section}
+  onChange={(e) => setSection(e.target.value)}
+/>
 
-    <button onClick={addFailure}>
-      ➕ Save Failure
-    </button>
-    <input
+<input
+  type="date"
+  value={closingDate}
+  onChange={(e) => setClosingDate(e.target.value)}
+/>
+
+<select
+  value={severity}
+  onChange={(e) => setSeverity(e.target.value)}
+>
+  <option>Critical</option>
+  <option>High</option>
+  <option>Medium</option>
+  <option>Low</option>
+</select>
+
+<button onClick={addFailure}>
+  ➕ Save Failure
+</button>
+
+<input
   type="file"
   accept=".xlsx,.xls"
-  onChange={(e) =>
-    setExcelFile(e.target.files[0])
-  }
+  onChange={(e) => setExcelFile(e.target.files[0])}
 />
 
 <button onClick={uploadExcel}>
@@ -1237,13 +1252,15 @@ className="table-section">
           <table>
             <thead>
             <tr>
-                  <th>ID</th>
-                  <th>Asset</th>
-                  <th>Location</th>
-                  <th>Severity</th>
-                  <th>Status</th>
-                  <th>Date</th>
-                  <th>Actions</th>
+             <th>SN</th>
+<th>Station</th>
+<th>Section</th>
+<th>Date</th>
+<th>Closing Date</th>
+<th>Main Cause</th>
+<th>Severity</th>
+<th>Status</th>
+<th>Actions</th>
 </tr>
             </thead>
 
@@ -1262,17 +1279,14 @@ className="table-section">
       </td>
     </tr>
   ) : (
-    filteredFailures.map((failure) => (
+   filteredFailures.map((failure, index) => (
       <tr key={failure._id}>
-      <td>{failure._id.slice(-6)}</td>
-      <td>{failure.title}</td>
-      <td>{failure.location}</td>
-      <td>{failure.severity}</td>
-      <td>
-  <span className={`status-badge ${failure.status.replace(" ", "-")}`}>
-    {failure.status}
-  </span>
-</td>
+      <td>{index + 1}</td>
+
+<td>{failure.location || "-"}</td>
+
+<td>{failure.section || "-"}</td>
+
 <td style={{ whiteSpace: "nowrap" }}>
   {new Date(failure.createdAt).toLocaleDateString(
     "en-GB",
@@ -1282,6 +1296,23 @@ className="table-section">
       year: "numeric",
     }
   )}
+</td>
+
+<td>{failure.closingDate || "-"}</td>
+
+<td>{failure.title || "-"}</td>
+
+<td>{failure.severity}</td>
+
+<td>
+  <span
+    className={`status-badge ${failure.status.replace(
+      " ",
+      "-"
+    )}`}
+  >
+    {failure.status}
+  </span>
 </td>
 
       <td>

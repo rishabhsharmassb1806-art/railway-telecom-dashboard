@@ -1374,3 +1374,7 @@ tr:hover{
     opacity:0.5;
   }
 }
+.closing-date-wrapper{
+  width:100%;
+  margin-top:15px;
+}
