@@ -1,6 +1,10 @@
+const multer = require("multer");
+const XLSX = require("xlsx");
 const express = require("express");
 const router = express.Router();
 const Failure = require("../models/failure");
+const storage = multer.memoryStorage();
+const upload = multer({ storage });
 
 // GET all failures
 router.get("/", async (req, res) => {
@@ -54,6 +58,54 @@ router.post("/", async (req, res) => {
     res.status(400).json({ message: error.message });
   }
 });
+// UPLOAD EXCEL
+router.post(
+  "/upload-excel",
+  upload.single("file"),
+  async (req, res) => {
+    try {
+      const workbook = XLSX.read(
+        req.file.buffer,
+        { type: "buffer" }
+      );
+
+      const sheetName =
+        workbook.SheetNames[0];
+
+      const sheet =
+        workbook.Sheets[sheetName];
+
+      const data =
+        XLSX.utils.sheet_to_json(sheet);
+
+      const failures = data.map(
+        (row) => ({
+          title: row.Asset,
+          location: row.Location,
+          severity: row.Severity,
+          status: row.Status || "Open",
+        })
+      );
+
+      await Failure.insertMany(
+        failures
+      );
+
+      res.json({
+        message:
+          "Excel Imported Successfully",
+        count: failures.length,
+      });
+    } catch (error) {
+      console.error(error);
+
+      res.status(500).json({
+        message:
+          "Excel Upload Failed",
+      });
+    }
+  }
+);
 
 // DELETE failure
 router.delete("/:id", async (req, res) => {
