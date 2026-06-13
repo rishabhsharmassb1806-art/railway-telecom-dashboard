@@ -1296,7 +1296,20 @@ className="table-section">
 
 <td>{failure.section || "-"}</td>
 
-<td>{failure.date}</td>
+<td>
+  {failure.date
+    ? new Date(
+        failure.date
+      ).toLocaleDateString(
+        "en-GB",
+        {
+          day: "2-digit",
+          month: "short",
+          year: "numeric",
+        }
+      )
+    : "-"}
+</td>
 
 <td>
   {failure.closingDate
