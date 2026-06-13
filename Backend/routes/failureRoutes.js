@@ -78,14 +78,15 @@ router.post(
       const data =
         XLSX.utils.sheet_to_json(sheet);
 
-      const failures = data.map(
-        (row) => ({
-          title: row.Asset,
-          location: row.Location,
-          severity: row.Severity,
-          status: row.Status || "Open",
-        })
-      );
+   const failures = data.map(
+  (row) => ({
+    title: row.Asset,
+    location: row.Location,
+    section: row.Section || "",
+    gear: row.Gear || "",
+    status: row.Status || "Open",
+  })
+);
 
       await Failure.insertMany(
         failures

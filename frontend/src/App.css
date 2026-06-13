@@ -1207,30 +1207,24 @@ tr:hover{
   opacity:.8;
 }
 
-.severity-badge{
-  padding:6px 12px;
-  border-radius:20px;
-  font-size:12px;
-  font-weight:600;
-}
-.severity-badge.Critical{
-  background:#ef4444;
-  color:white;
+.section-badge{
+  padding: 6px 12px;
+  border-radius: 20px;
+  font-size: 12px;
+  font-weight: 600;
+  color: white;
 }
 
-.severity-badge.High{
-  background:#f97316;
-  color:white;
+.section-badge.SCADA{
+  background: #3b82f6;
 }
 
-.severity-badge.Medium{
-  background:#eab308;
-  color:black;
+.section-badge.Control{
+  background: #8b5cf6;
 }
 
-.severity-badge.Low{
-  background:#22c55e;
-  color:white;
+.section-badge.FOIS{
+  background: #06b6d4;
 }
 .light-theme .activity-row{
   border-bottom:1px solid #e2e8f0;
@@ -1386,4 +1380,29 @@ tr:hover{
 
 .maincause-header {
   padding-left: 25px;
+}
+.section-wrapper {
+  position: relative;
+}
+.ticket-id{
+  display:inline-block;
+  padding:8px 16px;
+  border-radius:20px;
+  background:rgba(59,130,246,0.15);
+  border:1px solid rgba(59,130,246,0.3);
+  font-weight:600;
+}
+.failure-summary{
+  margin:20px 0;
+  padding:15px;
+  border-radius:12px;
+  background:rgba(255,255,255,0.05);
+  border:1px solid rgba(255,255,255,0.08);
+  line-height:1.6;
+  text-align:left;
+}
+
+.failure-summary h4{
+  margin-bottom:10px;
+  color:white;
 }

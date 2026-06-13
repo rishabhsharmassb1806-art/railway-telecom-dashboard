@@ -35,181 +35,46 @@ const [newAdminPass, setNewAdminPass] = useState("");
 const [excelFile, setExcelFile] = useState(null);
 const [loading, setLoading] = useState(true);
 const [section, setSection] = useState("");
+const [sectionSuggestions, setSectionSuggestions] = useState([]);
 const [gear, setGear] = useState("");
 const telecomAssets = [
-  "OFC",
-  "Signal Cable",
-  "Power Cable",
-  "Control Cable",
-  "Copper Cable",
-  "Fiber Patch Cord",
-  "Joint Closure",
-  "Splice Box",
-  "Patch Panel",
-  "ODF",
-
-  "Router",
-  "Core Router",
-  "Edge Router",
-  "Switch",
-  "Managed Switch",
-  "Layer 3 Switch",
-  "PoE Switch",
-
-  "Modem",
-  "Gateway",
-  "Firewall",
-  "Network Server",
-  "Application Server",
-  "Database Server",
-
-  "IP Phone",
-  "Telephone Exchange",
-  "EPABX",
-  "VoIP Gateway",
-  "SIP Server",
-
-  "CCTV Camera",
-  "PTZ Camera",
-  "Dome Camera",
-  "Bullet Camera",
-  "NVR",
-  "DVR",
-
-  "PA System",
-  "Amplifier",
-  "Speaker Unit",
-  "Announcement Console",
-  "Microphone Unit",
-
-  "Control Unit",
-  "Remote Terminal Unit",
-  "Data Logger",
-  "Network Interface Unit",
-  "Communication Processor",
-
-  "Radio Base Station",
-  "VHF Radio",
-  "UHF Radio",
-  "GSM-R Equipment",
-  "Antenna",
-  "Repeater",
-  "Signal Booster",
-
-  "UPS",
-  "Power Supply Unit",
-  "Battery Bank",
-  "Solar Power Unit",
-  "Inverter",
-
-  "Access Point",
-  "WiFi Controller",
-  "Media Converter",
-  "Ethernet Converter",
-  "Rack Cabinet",
-
-  "SCADA Terminal",
-  "Monitoring Console",
-  "Trackside Equipment",
-  "Station Communication Panel",
-  "Emergency Communication System"
+  "OFC Cable cut",
+  "Equipment failure",
+  "RCIL issue",
+  "Network failure",
+  "Internet fail",
+  "Cable cut",
+  "Cable def",
+  "OFC cut",
+  "Gear failure",
+  "E1 Issue",
+  "Weighment failure",
+"Router failure",
+"Switch failure",
+"SCADA communication loss",
+"FOIS connectivity issue"
 ];
 const telecomLocations = [
-  "Jodhpur Junction",
-  "Jaipur Junction",
-  "Ajmer Junction",
-  "Kota Junction",
-  "Bikaner Junction",
-  "Jaisalmer",
-  "Barmer",
-  "Pali Marwar",
-  "Sikar Junction",
-  "Alwar Junction",
-
-  "New Delhi",
-  "Old Delhi",
-  "Delhi Cantt",
-  "Hazrat Nizamuddin",
-  "Anand Vihar Terminal",
-  "Ghaziabad Junction",
-  "Meerut City",
-  "Panipat Junction",
-  "Ambala Cantt",
-  "Chandigarh",
-
-  "Amritsar Junction",
-  "Ludhiana Junction",
-  "Jalandhar City",
-  "Pathankot Junction",
-  "Jammu Tawi",
-
-  "Mumbai Central",
-  "Bandra Terminus",
-  "Lokmanya Tilak Terminus",
-  "Dadar",
-  "Thane",
-  "Pune Junction",
-  "Nagpur Junction",
-  "Nashik Road",
-  "Solapur Junction",
-
-  "Ahmedabad Junction",
-  "Vadodara Junction",
-  "Surat",
-  "Rajkot Junction",
-  "Bhavnagar Terminus",
-
-  "Bhopal Junction",
-  "Indore Junction",
-  "Jabalpur Junction",
-  "Gwalior Junction",
-  "Ujjain Junction",
-
-  "Lucknow Junction",
-  "Kanpur Central",
-  "Prayagraj Junction",
-  "Varanasi Junction",
-  "Gorakhpur Junction",
-  "Agra Cantt",
-
-  "Patna Junction",
-  "Danapur",
-  "Muzaffarpur Junction",
-  "Gaya Junction",
-  "Ranchi Junction",
-  "Dhanbad Junction",
-
-  "Howrah Junction",
-  "Sealdah",
-  "Kharagpur Junction",
-  "Asansol Junction",
-
-  "Bhubaneswar",
-  "Cuttack",
-  "Puri",
-
-  "Secunderabad Junction",
-  "Hyderabad Deccan",
-  "Vijayawada Junction",
-  "Visakhapatnam",
-
-  "Chennai Central",
-  "Chennai Egmore",
-  "Coimbatore Junction",
-  "Madurai Junction",
-
-  "Bengaluru City",
-  "Yesvantpur Junction",
-  "Mysuru Junction",
-  "Hubballi Junction",
-
-  "Ernakulam Junction",
-  "Kochi",
-  "Thiruvananthapuram Central",
-
-  "Guwahati",
-  "Dibrugarh",
-  "Silchar"
+  "MBW",
+  "SONU",
+  "BME",
+  "NAC",
+  "GOTN",
+  "MCPE",
+  "JU",
+  "JSM",
+  "MTD",
+  "BKN"
+];
+const sectionList = [
+  "JU-MTD",
+  "MTD-BKN",
+  "RKB-JSM",
+  "SMR-BLDI",
+  "SMR-MBF",
+  "MTD-FL",
+  "JU-BKN",
+  "JU-JSM",
 ];
 const fetchFailures = async () => {
   try {
@@ -293,29 +158,29 @@ const openCount = failures.filter(
 
 
 const scadaCount = failures.filter(
-  (f) => f.section === "SCADA"
+  (f) => f.gear === "SCADA"
 ).length;
 
 const controlCount = failures.filter(
-  (f) => f.section === "Control"
+  (f) => f.gear === "Control"
 ).length;
 
 const foisCount = failures.filter(
-  (f) => f.section === "FOIS"
+  (f) => f.gear === "FOIS"
 ).length;
 const filteredFailures = failures.filter((failure) =>
   `${failure.title ?? ""} ${failure.location ?? ""} ${
-    failure.severity ?? ""
+    failure.gear?? ""
   } ${failure.status ?? ""}`
     .toLowerCase()
     .includes(searchTerm.toLowerCase())
 );
 const suggestions = [
-  "Critical",
-  "High",
-  "Medium",
-  "Low",
+  "SCADA",
+  "Control",
+  "FOIS",
   "Open",
+  "In Progress",
   "Resolved",
 ];
 const adminLogin = () => {
@@ -462,29 +327,83 @@ const downloadPDF = () => {
   doc.setFontSize(18);
   doc.text("Telecom Failure Report", 14, 20);
 
-  autoTable(doc, {
-    startY: 30,
-    head: [["Asset", "Location", "Severity", "Status"]],
-    body: failures.map((failure) => [
-      failure.title,
-      failure.location,
-      failure.severity,
-      failure.status,
-    ]),
-  });
+autoTable(doc, {
+  startY: 30,
+ head: [[
+  "SN",
+  "Station",
+  "Section",
+  "Date",
+  "Closing Date",
+  "Main Cause",
+  "Gear",
+  "Status"
+]],
+ body: failures.map((failure, index) => [
+  index + 1,
+  failure.location,
+  failure.section,
+  new Date(failure.createdAt).toLocaleDateString(
+    "en-GB",
+    {
+      day: "2-digit",
+      month: "short",
+      year: "numeric",
+    }
+  ),
+  failure.closingDate
+    ? new Date(failure.closingDate).toLocaleDateString(
+        "en-GB",
+        {
+          day: "2-digit",
+          month: "short",
+          year: "numeric",
+        }
+      )
+    : "-",
+  failure.title,
+  failure.gear,
+  failure.status,
+]),
+});
 
   doc.save("Telecom_Failure_Report.pdf");
 };
 const downloadExcel = () => {
-  const excelData = failures.map((failure) => ({
-    Asset: failure.title,
-    Location: failure.location,
-    Severity: failure.severity,
-    Status: failure.status,
+  const excelData = failures.map(
+  (failure, index) => ({
+    SN: index + 1,
+    Station: failure.location,
+    Section: failure.section,
     Date: new Date(
       failure.createdAt
-    ).toLocaleDateString(),
-  }));
+    ).toLocaleDateString(
+      "en-GB",
+      {
+        day: "2-digit",
+        month: "short",
+        year: "numeric",
+      }
+    ),
+
+    "Closing Date": failure.closingDate
+      ? new Date(
+          failure.closingDate
+        ).toLocaleDateString(
+          "en-GB",
+          {
+            day: "2-digit",
+            month: "short",
+            year: "numeric",
+          }
+        )
+      : "-",
+
+    "Main Cause": failure.title,
+    Gear: failure.gear,
+    Status: failure.status,
+  })
+);
 
   const worksheet =
     XLSX.utils.json_to_sheet(excelData);
@@ -710,6 +629,8 @@ if (showSplash) {
 >
 📄 PDF Report
 </button>
+
+
  <button
     onClick={downloadExcel}
     className="sidebar-download-btn"
@@ -1118,10 +1039,10 @@ failure.status
           </p>
         </div>
 
-      <span
-  className="section-badge"
+     <span
+  className={`section-badge ${failure.gear}`}
 >
-  {failure.section}
+  {failure.gear}
 </span>
       </div>
     ))
@@ -1222,13 +1143,46 @@ setAssetSuggestions(matches);
     </div>
   )}
 </div>
-<input
-  type="text"
-  placeholder="Section"
-  value={section}
-  onChange={(e) => setSection(e.target.value)}
-/>
+<div className="section-wrapper">
+  <input
+    type="text"
+    placeholder="Section"
+    value={section}
+    onChange={(e) => {
+      const value = e.target.value;
 
+      setSection(value);
+
+      if (value.trim() === "") {
+        setSectionSuggestions([]);
+        return;
+      }
+
+      const matches = sectionList.filter((item) =>
+        item.toLowerCase().includes(value.toLowerCase())
+      );
+
+      setSectionSuggestions(matches);
+    }}
+  />
+
+  {sectionSuggestions.length > 0 && section !== "" && (
+    <div className="suggestions-box">
+      {sectionSuggestions.map((item, index) => (
+        <div
+          key={index}
+          className="suggestion-item"
+          onClick={() => {
+            setSection(item);
+            setSectionSuggestions([]);
+          }}
+        >
+          {item}
+        </div>
+      ))}
+    </div>
+  )}
+</div>
 <select
   value={gear}
  onChange={(e) => setGear(e.target.value)}
@@ -1316,10 +1270,21 @@ className="table-section">
   )}
 </td>
 
-<td>{failure.closingDate || "-"}</td>
+<td>
+  {failure.closingDate
+    ? new Date(failure.closingDate).toLocaleDateString(
+        "en-GB",
+        {
+          day: "2-digit",
+          month: "short",
+          year: "numeric",
+        }
+      )
+    : "-"}
+</td>
 
 <td>{failure.title || "-"}</td>
-<td>{JSON.stringify(failure)}</td>
+<td>{failure.gear || "-"}</td>
 
 <td>
   <span
@@ -1386,18 +1351,70 @@ className="table-section">
   <div className="modal-overlay">
     <div className="modal">
 
-      <h2>Failure Details</h2>
-      <hr />
+    <h2>Failure Details</h2>
+<hr />
 
-      <p><strong>ID:</strong> {selectedFailure._id}</p>
-      <p><strong>Asset:</strong> {selectedFailure.title}</p>
-      <p><strong>Location:</strong> {selectedFailure.location}</p>
-      <p><strong>Severity:</strong> {selectedFailure.severity}</p>
-      <p><strong>Status:</strong> {selectedFailure.status}</p>
-      <p>
-  <strong>Date:</strong>{" "}
-  {new Date(selectedFailure.createdAt).toLocaleString()}
+<p className="ticket-id">
+  Ticket ID:{" "}
+  {selectedFailure._id.slice(-6).toUpperCase()}
 </p>
+
+<p>
+  <strong>Main Cause:</strong>{" "}
+  {selectedFailure.title}
+</p>
+      <p><strong>Station:</strong> {selectedFailure.location}</p>
+      <p><strong>Section:</strong> {selectedFailure.section}</p>
+    <p><strong>Gear:</strong> {selectedFailure.gear}</p>
+    <p>
+  <strong>Expected Closing:</strong>{" "}
+  {selectedFailure.closingDate
+    ? new Date(
+        selectedFailure.closingDate
+      ).toLocaleDateString("en-GB", {
+        day: "2-digit",
+        month: "short",
+        year: "numeric",
+      })
+    : "-"}
+</p>
+      <p>
+  <strong>Status:</strong>{" "}
+  <span
+    className={`status-badge ${selectedFailure.status.replace(
+      " ",
+      "-"
+    )}`}
+  >
+    {selectedFailure.status}
+  </span>
+</p>
+<p>
+  <strong>Reported Date:</strong>{" "}
+  {new Date(
+    selectedFailure.createdAt
+  ).toLocaleDateString("en-GB", {
+    day: "2-digit",
+    month: "short",
+    year: "numeric",
+  })}
+</p>
+<div className="failure-summary">
+  <h4>📋 Summary</h4>
+
+  <p>
+    Failure reported at{" "}
+    <strong>{selectedFailure.location}</strong>
+    under{" "}
+    <strong>{selectedFailure.section}</strong>
+    section for{" "}
+    <strong>{selectedFailure.gear}</strong>
+    gear.
+
+    Current status is{" "}
+    <strong>{selectedFailure.status}</strong>.
+  </p>
+</div>
 
       <button
         onClick={() => setSelectedFailure(null)}
