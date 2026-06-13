@@ -35,7 +35,7 @@ const [newAdminPass, setNewAdminPass] = useState("");
 const [excelFile, setExcelFile] = useState(null);
 const [loading, setLoading] = useState(true);
 const [section, setSection] = useState("");
-const [closingDate, setClosingDate] = useState("");
+const [gear, setGear] = useState("");
 const telecomAssets = [
   "OFC",
   "Signal Cable",
@@ -278,7 +278,6 @@ useEffect(() => {
 const [password, setPassword] = useState("");
   const [asset, setAsset] = useState("");
 const [location, setLocation] = useState("");
-const [severity, setSeverity] = useState("Low");
 const [selectedFailure, setSelectedFailure] = useState(null);
 const [searchTerm, setSearchTerm] = useState("");
   const [failures, setFailures] = useState([]);
@@ -292,8 +291,17 @@ const openCount = failures.filter(
   (f) => f.status === "Open"
 ).length;
 
-const criticalCount = failures.filter(
-  (f) => f.severity === "Critical"
+
+const scadaCount = failures.filter(
+  (f) => f.section === "SCADA"
+).length;
+
+const controlCount = failures.filter(
+  (f) => f.section === "Control"
+).length;
+
+const foisCount = failures.filter(
+  (f) => f.section === "FOIS"
 ).length;
 const filteredFailures = failures.filter((failure) =>
   `${failure.title ?? ""} ${failure.location ?? ""} ${
@@ -379,20 +387,33 @@ const deleteAdmin = async (id) => {
 };
 
 const addFailure = async () => {
-if (!asset || !location || !section) {
+  if (!asset || !location || !section || !gear) {
     alert("Please fill all fields");
     return;
   }
 
   try {
+    const randomDays =
+  Math.floor(Math.random() * 2) + 3;
+
+const expectedClosingDate =
+  new Date();
+
+expectedClosingDate.setDate(
+  expectedClosingDate.getDate() +
+    randomDays
+);
    await axios.post(
   "https://railway-telecom-backend.onrender.com/api/failures",
-  {
-    title: asset,          // Main Cause
-    location,             // Station
-    section,
-    closingDate,
-    severity,
+ {
+  title: asset,
+  location,
+  section,
+  gear,
+    closingDate:
+          expectedClosingDate
+            .toISOString()
+            .split("T")[0],
     status: "Open",
   }
 );
@@ -402,8 +423,8 @@ if (!asset || !location || !section) {
    setAsset("");
 setLocation("");
 setSection("");
-setClosingDate("");
-setSeverity("Low");
+setGear("");
+
     alert("Failure Added Successfully");
   } catch (error) {
     console.error(error);
@@ -524,9 +545,9 @@ const updateStatus = async (id) => {
 };
 
 const pieData = [
-  { name: "Resolved", value: resolvedCount },
-  { name: "Critical", value: criticalCount },
-  { name: "Open", value: openCount },
+  { name: "SCADA", value: scadaCount },
+  { name: "Control", value: controlCount },
+  { name: "FOIS", value: foisCount },
 ];
  const assetCounts = {};
 
@@ -579,7 +600,7 @@ const recentFailures = [...failures]
       new Date(a.createdAt)
   )
   .slice(0, 5);
-  const COLORS = ["#22c55e", "#ef4444", "#f59e0b"];
+const COLORS = ["#3b82f6", "#8b5cf6", "#06b6d4"];
 if (showSplash) {
   return (
     <div className="premium-splash">
@@ -871,7 +892,7 @@ if (showSplash) {
      <input
   type="text"
   className="search-bar"
-  placeholder="Search by asset, location, severity or status..."
+placeholder="Search by asset, station, gear or status..."
   value={searchTerm}
 onChange={(e) => {
   const value = e.target.value;
@@ -886,12 +907,12 @@ onChange={(e) => {
   const matches = failures.filter((failure) =>
     (
       failure.title +
-      " " +
-      failure.location +
-      " " +
-      failure.severity +
-      " " +
-      failure.status
+" " +
+failure.location +
+" " +
+failure.section +
+" " +
+failure.status
     )
       .toLowerCase()
       .includes(value.toLowerCase())
@@ -977,27 +998,26 @@ onChange={(e) => {
           </div>
 
           <div className="card critical">
-            <h3>Critical Failures</h3>
-           <p>{criticalCount}</p>
-          </div>
+  <h3>SCADA Failures</h3>
+  <p>{scadaCount}</p>
+</div>
 
-          <div className="card resolved">
-            <h3>Resolved</h3>
-          <p>{resolvedCount}</p>
-          </div>
+<div className="card resolved">
+  <h3>Control Failures</h3>
+  <p>{controlCount}</p>
+</div>
 
-          <div className="card open">
-            <h3>Open</h3>
-            <p>{openCount}</p>
-
-          </div>
+<div className="card open">
+  <h3>FOIS Failures</h3>
+  <p>{foisCount}</p>
+</div>
         </div>
 {/* Charts */}
 <div className="charts">
 
   {/* Pie Chart */}
   <div className="chart-card">
-    <h2>Failure Distribution</h2>
+   <h2>Gear Distribution</h2>
 
     <ResponsiveContainer width="100%" height={300}>
       <PieChart>
@@ -1098,11 +1118,11 @@ onChange={(e) => {
           </p>
         </div>
 
-        <span
-          className={`severity-badge ${failure.severity}`}
-        >
-          {failure.severity}
-        </span>
+      <span
+  className="section-badge"
+>
+  {failure.section}
+</span>
       </div>
     ))
   )}
@@ -1202,7 +1222,6 @@ setAssetSuggestions(matches);
     </div>
   )}
 </div>
-
 <input
   type="text"
   placeholder="Section"
@@ -1210,21 +1229,16 @@ setAssetSuggestions(matches);
   onChange={(e) => setSection(e.target.value)}
 />
 
-<input
-  type="date"
-  value={closingDate}
-  onChange={(e) => setClosingDate(e.target.value)}
-/>
-
 <select
-  value={severity}
-  onChange={(e) => setSeverity(e.target.value)}
+  value={gear}
+ onChange={(e) => setGear(e.target.value)}
 >
-  <option>Critical</option>
-  <option>High</option>
-  <option>Medium</option>
-  <option>Low</option>
+  <option value="">Select Gear</option>
+  <option value="SCADA">SCADA</option>
+  <option value="Control">Control</option>
+  <option value="FOIS">FOIS</option>
 </select>
+
 
 <button onClick={addFailure}>
   ➕ Save Failure
@@ -1255,11 +1269,15 @@ className="table-section">
              <th>SN</th>
 <th>Station</th>
 <th>Section</th>
-<th>Date</th>
+<th className="date-header">Date</th>
 <th>Closing Date</th>
-<th>Main Cause</th>
-<th>Severity</th>
-<th>Status</th>
+<th className="maincause-header">
+  Main Cause
+</th>
+<th>Gear</th>
+<th className="status-header">
+  Status
+</th>
 <th>Actions</th>
 </tr>
             </thead>
@@ -1301,8 +1319,7 @@ className="table-section">
 <td>{failure.closingDate || "-"}</td>
 
 <td>{failure.title || "-"}</td>
-
-<td>{failure.severity}</td>
+<td>{JSON.stringify(failure)}</td>
 
 <td>
   <span

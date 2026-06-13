@@ -1377,4 +1377,13 @@ tr:hover{
 .closing-date-wrapper{
   width:100%;
   margin-top:15px;
+}.status-header {
+  padding-left: 35px;
+}
+.date-header {
+  padding-left: 20px;
+}
+
+.maincause-header {
+  padding-left: 25px;
 }
