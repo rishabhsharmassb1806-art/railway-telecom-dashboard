@@ -1442,7 +1442,10 @@ className="table-section">
       </button>
 <button
   className="view-btn"
-  onClick={() => setSelectedFailure(failure)}
+  onClick={() => {
+    console.log("Failure Object:", failure);
+    setSelectedFailure(failure);
+  }}
 >
   👁 View
 </button>
@@ -1517,14 +1520,15 @@ className="table-section">
 </p>
 <p>
   <strong>Reported Date:</strong>{" "}
-  {new Date(
-    selectedFailure.createdAt
-  ).toLocaleDateString("en-GB", {
-    day: "2-digit",
-    month: "short",
-    year: "numeric",
-  })}
+  {selectedFailure.date
+    ? new Date(selectedFailure.date).toLocaleDateString("en-GB", {
+        day: "2-digit",
+        month: "short",
+        year: "numeric",
+      })
+    : "-"}
 </p>
+
 <div className="failure-summary">
   <h4>📋 Summary</h4>
 
