@@ -77,7 +77,14 @@ for (const sheetName of workbook.SheetNames) {
 
   const data =
     XLSX.utils.sheet_to_json(sheet);
+const reportDate = new Date();
 
+const expectedClosingDate =
+  new Date();
+
+expectedClosingDate.setDate(
+  reportDate.getDate() + 4
+);
   const failures = data.map(
     (row) => ({
       title:
@@ -101,12 +108,11 @@ for (const sheetName of workbook.SheetNames) {
   row["Gear "] ||
   row.Gear ||
   "",
-    closingDate:
-      row.Date
-        ? new Date(row.Date)
-            .toISOString()
-            .split("T")[0]
-        : "",
+  closingDate:
+  expectedClosingDate
+    .toISOString()
+    .split("T")[0],
+
 
       year: sheetName,
 
