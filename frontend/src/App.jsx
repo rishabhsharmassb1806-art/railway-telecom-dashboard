@@ -1094,7 +1094,7 @@ failure.status
         <CartesianGrid strokeDasharray="3 3" />
       <XAxis
   dataKey="asset"
-  angle={-35}
+  angle={-43}
   textAnchor="end"
   interval={0}
   height={100}
