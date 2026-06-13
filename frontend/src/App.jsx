@@ -153,6 +153,8 @@ const [password, setPassword] = useState("");
 const [location, setLocation] = useState("");
 const [selectedFailure, setSelectedFailure] = useState(null);
 const [searchTerm, setSearchTerm] = useState("");
+const [cardFilter, setCardFilter] =
+  useState("");
   const [failures, setFailures] = useState([]);
   const filteredFailures = failures
   .filter((failure) =>
@@ -160,13 +162,32 @@ const [searchTerm, setSearchTerm] = useState("");
       ? true
       : failure.year === selectedYear
   )
-  .filter((failure) =>
+.filter((failure) => {
+
+  const matchesSearch =
     `${failure.title ?? ""} ${failure.location ?? ""} ${
       failure.section ?? ""
-    } ${failure.gear ?? ""} ${failure.status ?? ""}`
+    } ${failure.gear ?? ""} ${
+      failure.status ?? ""
+    }`
       .toLowerCase()
-      .includes(searchTerm.toLowerCase())
+      .includes(searchTerm.toLowerCase());
+
+  const matchesCard =
+  cardFilter === ""
+    ? true
+    : (failure.gear || "")
+        .trim()
+        .toLowerCase() ===
+      cardFilter
+        .trim()
+        .toLowerCase();
+
+  return (
+    matchesSearch &&
+    matchesCard
   );
+})
 
 const totalFailures = filteredFailures.length;
 
@@ -539,7 +560,11 @@ const recentFailures = [...filteredFailures]
       new Date(a.createdAt)
   )
   .slice(0, 5);
-const COLORS = ["#3b82f6", "#8b5cf6", "#06b6d4"];
+const COLORS = [
+  "#7c3aed", // SCADA
+  "#166534", // Control
+  "#b45309", // FOIS
+];
 if (showSplash) {
   return (
     <div className="premium-splash">
@@ -948,27 +973,70 @@ failure.status
 </div>
 
         {/* Cards */}
-        <div className="cards">
-          <div className="card total">
-            <h3>Total Failures</h3>
-          <p>{totalFailures}</p>
-          </div>
+    {/* Cards */}
+<div className="cards">
 
-          <div className="card critical">
-  <h3>SCADA Failures</h3>
-  <p>{scadaCount}</p>
-</div>
+  <div
+    className="card total"
+    onClick={() => {
+      setCardFilter("");
+      document
+        .getElementById("failure-section")
+        ?.scrollIntoView({
+          behavior: "smooth",
+        });
+    }}
+  >
+    <h3>Total Failures</h3>
+    <p>{totalFailures}</p>
+  </div>
 
-<div className="card resolved">
-  <h3>Control Failures</h3>
-  <p>{controlCount}</p>
-</div>
+  <div
+    className="card critical"
+    onClick={() => {
+      setCardFilter("SCADA");
+      document
+        .getElementById("failure-section")
+        ?.scrollIntoView({
+          behavior: "smooth",
+        });
+    }}
+  >
+    <h3>SCADA Failures</h3>
+    <p>{scadaCount}</p>
+  </div>
 
-<div className="card open">
-  <h3>FOIS Failures</h3>
-  <p>{foisCount}</p>
+  <div
+    className="card resolved"
+    onClick={() => {
+      setCardFilter("Control");
+      document
+        .getElementById("failure-section")
+        ?.scrollIntoView({
+          behavior: "smooth",
+        });
+    }}
+  >
+    <h3>Control Failures</h3>
+    <p>{controlCount}</p>
+  </div>
+
+  <div
+    className="card open"
+    onClick={() => {
+      setCardFilter("FOIS");
+      document
+        .getElementById("failure-section")
+        ?.scrollIntoView({
+          behavior: "smooth",
+        });
+    }}
+  >
+    <h3>FOIS Failures</h3>
+    <p>{foisCount}</p>
+  </div>
+
 </div>
-        </div>
 {/* Charts */}
 <div className="charts">
 
@@ -984,6 +1052,7 @@ failure.status
           outerRadius={100}
           label
         >
+
           {pieData.map((entry, index) => (
             <Cell
               key={index}
@@ -995,6 +1064,22 @@ failure.status
         <Tooltip />
       </PieChart>
     </ResponsiveContainer>
+    <div className="chart-legend">
+  <div className="legend-item">
+    <span className="legend-color scada"></span>
+    SCADA
+  </div>
+
+  <div className="legend-item">
+    <span className="legend-color control"></span>
+    Control
+  </div>
+
+  <div className="legend-item">
+    <span className="legend-color fois"></span>
+    FOIS
+  </div>
+</div>
   </div>
 
   {/* Bar Chart */}
@@ -1004,7 +1089,7 @@ failure.status
   >
     <h2>Asset Failures</h2>
 
-    <ResponsiveContainer width="100%" height={300}>
+    <ResponsiveContainer width="100%" height={360}>
       <BarChart data={barData}>
         <CartesianGrid strokeDasharray="3 3" />
       <XAxis
@@ -1012,7 +1097,7 @@ failure.status
   angle={-35}
   textAnchor="end"
   interval={0}
-  height={50}
+  height={100}
 />
         <YAxis />
         <Tooltip />
