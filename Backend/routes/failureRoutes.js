@@ -77,16 +77,24 @@ for (const sheetName of workbook.SheetNames) {
 
   const data =
     XLSX.utils.sheet_to_json(sheet);
-const reportDate = new Date();
 
-const expectedClosingDate =
-  new Date();
-
-expectedClosingDate.setDate(
-  reportDate.getDate() + 4
-);
   const failures = data.map(
-    (row) => ({
+  (row) => {
+    const excelDate = row.Date
+  ? new Date(
+      (row.Date - 25569) *
+      86400 *
+      1000
+    )
+  : new Date();
+
+const closingDate =
+  new Date(excelDate);
+
+closingDate.setDate(
+  closingDate.getDate() + 4
+);
+return{
       title:
         row.Asset ||
         row["Gear failure"] ||
@@ -117,8 +125,8 @@ expectedClosingDate.setDate(
       .toISOString()
       .split("T")[0]
   : "",
-  closingDate:
-  expectedClosingDate
+ closingDate:
+  closingDate
     .toISOString()
     .split("T")[0],
 
@@ -126,8 +134,8 @@ expectedClosingDate.setDate(
       year: sheetName,
 
       status: "Open",
-    })
-  );
+    };
+});
   
 const validFailures = failures.filter(
   (failure) =>

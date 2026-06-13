@@ -1260,7 +1260,7 @@ className="table-section">
 <th>Station</th>
 <th>Section</th>
 <th className="date-header">Date</th>
-<th>Closing Date</th>
+<th> Closing Date</th>
 <th className="maincause-header">
   Main Cause
 </th>
