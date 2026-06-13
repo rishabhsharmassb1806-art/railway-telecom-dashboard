@@ -108,6 +108,7 @@ expectedClosingDate.setDate(
   row["Gear "] ||
   row.Gear ||
   "",
+  date: row.Date || "",
   closingDate:
   expectedClosingDate
     .toISOString()

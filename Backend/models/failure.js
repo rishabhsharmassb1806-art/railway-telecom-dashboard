@@ -16,7 +16,10 @@ const failureSchema = new mongoose.Schema({
     type: String,
     default: "",
   },
-
+date: {
+  type: String,
+  default: "",
+},
   closingDate: {
     type: String,
     default: "",

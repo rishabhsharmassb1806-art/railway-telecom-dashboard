@@ -1296,16 +1296,7 @@ className="table-section">
 
 <td>{failure.section || "-"}</td>
 
-<td style={{ whiteSpace: "nowrap" }}>
-  {new Date(failure.createdAt).toLocaleDateString(
-    "en-GB",
-    {
-      day: "2-digit",
-      month: "short",
-      year: "numeric",
-    }
-  )}
-</td>
+<td>{failure.date}</td>
 
 <td>
   {failure.closingDate
