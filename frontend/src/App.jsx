@@ -85,7 +85,6 @@ const fetchFailures = async () => {
     const res = await axios.get(
   "https://railway-telecom-backend.onrender.com/api/failures"
 );
-
     setFailures(res.data.reverse());
 
     setLoading(false);
@@ -111,6 +110,7 @@ useEffect(() => {
    fetchAdmins();
   
 }, []);
+
 
 
 const [admins, setAdmins] = useState([]);
@@ -148,28 +148,7 @@ const [location, setLocation] = useState("");
 const [selectedFailure, setSelectedFailure] = useState(null);
 const [searchTerm, setSearchTerm] = useState("");
   const [failures, setFailures] = useState([]);
-const totalFailures = filteredFailures.length;
-
-const resolvedCount = failures.filter(
-  (f) => f.status === "Resolved"
-).length;
-
-const openCount = failures.filter(
-  (f) => f.status === "Open"
-).length;
-
-const scadaCount = filteredFailures.filter(
-  (f) => f.gear === "SCADA"
-).length;
-
-const controlCount = filteredFailures.filter(
-  (f) => f.gear === "Control"
-).length;
-
-const foisCount = filteredFailures.filter(
-  (f) => f.gear === "FOIS"
-).length;
-const filteredFailures = failures
+  const filteredFailures = failures
   .filter((failure) =>
     selectedYear === "All Years"
       ? true
@@ -182,6 +161,29 @@ const filteredFailures = failures
       .toLowerCase()
       .includes(searchTerm.toLowerCase())
   );
+
+const totalFailures = filteredFailures.length;
+
+// const resolvedCount = failures.filter(
+//   (f) => f.status === "Resolved"
+// ).length;
+
+// const openCount = failures.filter(
+//   (f) => f.status === "Open"
+// ).length;
+
+const scadaCount = filteredFailures.filter(
+  (f) => f.gear === "SCADA"
+).length;
+
+const controlCount = filteredFailures.filter(
+  (f) => f.gear === "Control"
+).length;
+
+const foisCount = filteredFailures.filter(
+  (f) => f.gear === "FOIS"
+).length;
+
 const suggestions = [
   "SCADA",
   "Control",
@@ -482,7 +484,7 @@ const pieData = [
 ];
  const assetCounts = {};
 
-failures.forEach((failure) => {
+filteredFailures.forEach((failure) => {
   assetCounts[failure.title] =
     (assetCounts[failure.title] || 0) + 1;
 });
@@ -516,7 +518,7 @@ const barData = Object.keys(assetCounts).map(
 );
 const locationCounts = {};
 
-failures.forEach((failure) => {
+filteredFailures.forEach((failure) => {
   locationCounts[failure.location] =
     (locationCounts[failure.location] || 0) + 1;
 });
@@ -524,7 +526,7 @@ failures.forEach((failure) => {
 const topLocations = Object.entries(locationCounts)
   .sort((a, b) => b[1] - a[1])
   .slice(0, 5);
-const recentFailures = [...failures]
+const recentFailures = [...filteredFailures]
   .sort(
     (a, b) =>
       new Date(b.createdAt) -
@@ -916,17 +918,9 @@ failure.status
       All Years
     </option>
 
-    <option value="2023-24">
-      2023-24
-    </option>
-
-    <option value="2024-25">
-      2024-25
-    </option>
-
-    <option value="2025-26">
-      2025-26
-    </option>
+  <option value="23-24">23-24</option>
+<option value="24-25">24-25</option>
+<option value="25-26">25-26</option>
   </select>
 </div>
 

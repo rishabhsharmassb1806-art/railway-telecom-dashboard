@@ -69,28 +69,48 @@ router.post(
         { type: "buffer" }
       );
 
-      const sheetName =
-        workbook.SheetNames[0];
+let allFailures = [];
 
-      const sheet =
-        workbook.Sheets[sheetName];
+for (const sheetName of workbook.SheetNames) {
+  const sheet =
+    workbook.Sheets[sheetName];
 
-      const data =
-        XLSX.utils.sheet_to_json(sheet);
+  const data =
+    XLSX.utils.sheet_to_json(sheet);
 
-   const failures = data.map(
-  (row) => ({
-    title: row.Asset,
-    location: row.Location,
-    section: row.Section || "",
-    gear: row.Gear || "",
-    status: row.Status || "Open",
-  })
-);
+  const failures = data.map(
+    (row) => ({
+      title:
+        row.Asset ||
+        row["Gear failure"] ||
+        row["Main cause"] ||
+        "",
 
-      await Failure.insertMany(
-        failures
-      );
+      location:
+        row.Location ||
+        row.Station ||
+        row.STN ||
+        "",
+
+      section:
+        row.Section ||
+        row["Sec."] ||
+        "",
+
+      gear:
+        row.Gear ||
+        "",
+
+      year: sheetName,
+
+      status: "Open",
+    })
+  );
+
+  allFailures.push(...failures);
+}
+
+await Failure.insertMany(allFailures);
 
       res.json({
         message:
