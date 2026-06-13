@@ -106,8 +106,14 @@ for (const sheetName of workbook.SheetNames) {
       status: "Open",
     })
   );
+  
+const validFailures = failures.filter(
+  (failure) =>
+    failure.title &&
+    failure.location
+);
 
-  allFailures.push(...failures);
+allFailures.push(...validFailures);
 }
 
 await Failure.insertMany(allFailures);
@@ -115,7 +121,7 @@ await Failure.insertMany(allFailures);
       res.json({
         message:
           "Excel Imported Successfully",
-        count: failures.length,
+       count: allFailures.length,
       });
     } catch (error) {
       console.error(error);

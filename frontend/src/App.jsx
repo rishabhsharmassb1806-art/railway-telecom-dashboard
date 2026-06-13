@@ -89,9 +89,15 @@ const fetchFailures = async () => {
 
     setLoading(false);
   } catch (error) {
-    console.error(error);
-    setLoading(false);
-  }
+  console.error(
+    "UPLOAD ERROR:",
+    error
+  );
+
+  res.status(500).json({
+    message: error.message,
+  });
+}
 };
 const fetchAdmins = async () => {
   try {
