@@ -21,10 +21,10 @@ const failureSchema = new mongoose.Schema({
     default: "",
   },
 
-  severity: {
-    type: String,
-    default: "Low",
-  },
+  gear: {
+  type: String,
+  default: "",
+},
 
   status: {
     type: String,
