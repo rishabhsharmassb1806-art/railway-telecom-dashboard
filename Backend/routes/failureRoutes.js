@@ -98,8 +98,15 @@ for (const sheetName of workbook.SheetNames) {
         "",
 
       gear:
-        row.Gear ||
-        "",
+  row["Gear "] ||
+  row.Gear ||
+  "",
+    closingDate:
+      row.Date
+        ? new Date(row.Date)
+            .toISOString()
+            .split("T")[0]
+        : "",
 
       year: sheetName,
 
