@@ -36,6 +36,8 @@ const [excelFile, setExcelFile] = useState(null);
 const [loading, setLoading] = useState(true);
 const [section, setSection] = useState("");
 const [sectionSuggestions, setSectionSuggestions] = useState([]);
+const [selectedYear, setSelectedYear] =
+  useState("All Years");
 const [gear, setGear] = useState("");
 const telecomAssets = [
   "OFC Cable cut",
@@ -146,7 +148,7 @@ const [location, setLocation] = useState("");
 const [selectedFailure, setSelectedFailure] = useState(null);
 const [searchTerm, setSearchTerm] = useState("");
   const [failures, setFailures] = useState([]);
-const totalFailures = failures.length;
+const totalFailures = filteredFailures.length;
 
 const resolvedCount = failures.filter(
   (f) => f.status === "Resolved"
@@ -156,25 +158,30 @@ const openCount = failures.filter(
   (f) => f.status === "Open"
 ).length;
 
-
-const scadaCount = failures.filter(
+const scadaCount = filteredFailures.filter(
   (f) => f.gear === "SCADA"
 ).length;
 
-const controlCount = failures.filter(
+const controlCount = filteredFailures.filter(
   (f) => f.gear === "Control"
 ).length;
 
-const foisCount = failures.filter(
+const foisCount = filteredFailures.filter(
   (f) => f.gear === "FOIS"
 ).length;
-const filteredFailures = failures.filter((failure) =>
-  `${failure.title ?? ""} ${failure.location ?? ""} ${
-    failure.gear?? ""
-  } ${failure.status ?? ""}`
-    .toLowerCase()
-    .includes(searchTerm.toLowerCase())
-);
+const filteredFailures = failures
+  .filter((failure) =>
+    selectedYear === "All Years"
+      ? true
+      : failure.year === selectedYear
+  )
+  .filter((failure) =>
+    `${failure.title ?? ""} ${failure.location ?? ""} ${
+      failure.section ?? ""
+    } ${failure.gear ?? ""} ${failure.status ?? ""}`
+      .toLowerCase()
+      .includes(searchTerm.toLowerCase())
+  );
 const suggestions = [
   "SCADA",
   "Control",
@@ -268,17 +275,19 @@ expectedClosingDate.setDate(
   expectedClosingDate.getDate() +
     randomDays
 );
-   await axios.post(
+ await axios.post(
   "https://railway-telecom-backend.onrender.com/api/failures",
- {
-  title: asset,
-  location,
-  section,
-  gear,
-    closingDate:
-          expectedClosingDate
-            .toISOString()
-            .split("T")[0],
+  {
+    title: asset,
+    location,
+    section,
+    gear,
+    year: selectedYear === "All Years"
+      ? "2025-26"
+      : selectedYear,
+    closingDate: expectedClosingDate
+      .toISOString()
+      .split("T")[0],
     status: "Open",
   }
 );
@@ -325,7 +334,11 @@ const downloadPDF = () => {
   const doc = new jsPDF();
 
   doc.setFontSize(18);
-  doc.text("Telecom Failure Report", 14, 20);
+doc.text(
+  `Railway Telecom Failure Report (${selectedYear})`,
+  14,
+  20
+);
 
 autoTable(doc, {
   startY: 30,
@@ -339,7 +352,7 @@ autoTable(doc, {
   "Gear",
   "Status"
 ]],
- body: failures.map((failure, index) => [
+body: filteredFailures.map((failure, index) => [
   index + 1,
   failure.location,
   failure.section,
@@ -370,7 +383,7 @@ autoTable(doc, {
   doc.save("Telecom_Failure_Report.pdf");
 };
 const downloadExcel = () => {
-  const excelData = failures.map(
+ const excelData = filteredFailures.map(
   (failure, index) => ({
     SN: index + 1,
     Station: failure.location,
@@ -430,11 +443,10 @@ const downloadExcel = () => {
         "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
     }
   );
-
-  saveAs(
-    fileData,
-    "Railway_Failure_Report.xlsx"
-  );
+ saveAs(
+  fileData,
+  `Railway_Failure_Report_${selectedYear}.xlsx`
+);
 };
  const deleteFailure = async (id) => {
   try {
@@ -891,9 +903,33 @@ failure.status
 </div>
 
 </div>
+<div className="year-filter">
+  <label>📅 Financial Year</label>
 
+  <select
+    value={selectedYear}
+    onChange={(e) =>
+      setSelectedYear(e.target.value)
+    }
+  >
+    <option value="All Years">
+      All Years
+    </option>
 
-        
+    <option value="2023-24">
+      2023-24
+    </option>
+
+    <option value="2024-25">
+      2024-25
+    </option>
+
+    <option value="2025-26">
+      2025-26
+    </option>
+  </select>
+</div>
+
 
         {/* Header */}
       <div id="dashboard-section">
@@ -1232,6 +1268,7 @@ className="table-section">
 <th className="status-header">
   Status
 </th>
+
 <th>Actions</th>
 </tr>
             </thead>

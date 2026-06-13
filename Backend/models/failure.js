@@ -1,6 +1,7 @@
 const mongoose = require("mongoose");
 
 const failureSchema = new mongoose.Schema({
+  
   title: {
     type: String,
     required: true,
@@ -24,6 +25,10 @@ const failureSchema = new mongoose.Schema({
   gear: {
   type: String,
   default: "",
+},
+year: {
+  type: String,
+  default: "2025-26",
 },
 
   status: {
