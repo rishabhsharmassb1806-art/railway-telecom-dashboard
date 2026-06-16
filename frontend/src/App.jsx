@@ -39,6 +39,10 @@ const [sectionSuggestions, setSectionSuggestions] = useState([]);
 const [selectedYear, setSelectedYear] =
   useState("All Years");
 const [gear, setGear] = useState("");
+const [currentPage, setCurrentPage] =
+  useState(1);
+
+const recordsPerPage = 10;
 const telecomAssets = [
   "OFC Cable cut",
   "Equipment failure",
@@ -188,6 +192,24 @@ const [cardFilter, setCardFilter] =
     matchesCard
   );
 })
+const indexOfLastRecord =
+  currentPage * recordsPerPage;
+
+const indexOfFirstRecord =
+  indexOfLastRecord -
+  recordsPerPage;
+
+const currentFailures =
+  filteredFailures.slice(
+    indexOfFirstRecord,
+    indexOfLastRecord
+  );
+
+const totalPages =
+  Math.ceil(
+    filteredFailures.length /
+      recordsPerPage
+  );
 
 const totalFailures = filteredFailures.length;
 
@@ -202,7 +224,6 @@ const totalFailures = filteredFailures.length;
 const scadaCount = filteredFailures.filter(
   (f) => f.gear === "SCADA"
 ).length;
-
 const controlCount = filteredFailures.filter(
   (f) => f.gear === "Control"
 ).length;
@@ -864,6 +885,7 @@ onChange={(e) => {
   const value = e.target.value;
 
   setSearchTerm(value);
+  setCurrentPage(1);
 
   if (value.trim() === "") {
     setSearchSuggestions([]);
@@ -941,9 +963,10 @@ failure.status
 
   <select
     value={selectedYear}
-    onChange={(e) =>
-      setSelectedYear(e.target.value)
-    }
+  onChange={(e) => {
+  setSelectedYear(e.target.value);
+  setCurrentPage(1);
+}}
   >
     <option value="All Years">
       All Years
@@ -980,6 +1003,7 @@ failure.status
     className="card total"
     onClick={() => {
       setCardFilter("");
+      setCurrentPage(1);
       document
         .getElementById("failure-section")
         ?.scrollIntoView({
@@ -995,6 +1019,7 @@ failure.status
     className="card critical"
     onClick={() => {
       setCardFilter("SCADA");
+      setCurrentPage(1);
       document
         .getElementById("failure-section")
         ?.scrollIntoView({
@@ -1010,6 +1035,7 @@ failure.status
     className="card resolved"
     onClick={() => {
       setCardFilter("Control");
+      setCurrentPage(1);
       document
         .getElementById("failure-section")
         ?.scrollIntoView({
@@ -1025,6 +1051,7 @@ failure.status
     className="card open"
     onClick={() => {
       setCardFilter("FOIS");
+      setCurrentPage(1);
       document
         .getElementById("failure-section")
         ?.scrollIntoView({
@@ -1373,7 +1400,7 @@ className="table-section">
       </td>
     </tr>
   ) : (
-   filteredFailures.map((failure, index) => (
+   currentFailures.map((failure, index) => (
       <tr key={failure._id}>
       <td>{index + 1}</td>
 
@@ -1475,6 +1502,37 @@ className="table-section">
   )}
 </tbody>
           </table>
+          <div className="pagination">
+
+  <button
+    disabled={currentPage === 1}
+    onClick={() =>
+      setCurrentPage(
+        currentPage - 1
+      )
+    }
+  >
+    ⬅ Prev
+  </button>
+
+  <span>
+    Page {currentPage} of {totalPages}
+  </span>
+
+  <button
+    disabled={
+      currentPage === totalPages
+    }
+    onClick={() =>
+      setCurrentPage(
+        currentPage + 1
+      )
+    }
+  >
+    Next ➡
+  </button>
+
+</div>
         </div>
         {selectedFailure && (
   <div className="modal-overlay">
