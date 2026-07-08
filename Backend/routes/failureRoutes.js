@@ -51,7 +51,10 @@ router.put("/:id", async (req, res) => {
 // ADD failure
 router.post("/", async (req, res) => {
   try {
-    const failure = new Failure(req.body);
+const failure = new Failure({
+  ...req.body,
+  date: new Date().toISOString().split("T")[0],
+});
     const savedFailure = await failure.save();
     res.status(201).json(savedFailure);
   } catch (error) {
