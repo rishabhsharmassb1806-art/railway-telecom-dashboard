@@ -41,6 +41,37 @@ const [selectedYear, setSelectedYear] =
 const [gear, setGear] = useState("");
 const [currentPage, setCurrentPage] =
   useState(1);
+  const [animatedTotal, setAnimatedTotal] = useState(0);
+  const handleMove = (e) => {
+  const card = e.currentTarget;
+  const rect = card.getBoundingClientRect();
+
+const x = e.clientX - rect.left;
+const y = e.clientY - rect.top;
+
+card.style.setProperty("--x", `${x}px`);
+card.style.setProperty("--y", `${y}px`);
+
+ 
+
+  const centerX = rect.width / 2;
+  const centerY = rect.height / 2;
+
+  const rotateX = -(y - centerY) / 35;
+  const rotateY = (x - centerX) / 35;
+
+  card.style.transform = `
+    perspective(1000px)
+    rotateX(${rotateX}deg)
+    rotateY(${rotateY}deg)
+    scale(1.03)
+  `;
+};
+
+const handleLeave = (e) => {
+  e.currentTarget.style.transform =
+    "perspective(1000px) rotateX(0deg) rotateY(0deg) scale(1)";
+};
 
 const recordsPerPage = 10;
 const telecomAssets = [
@@ -121,8 +152,6 @@ useEffect(() => {
   
 }, []);
 
-
-
 const [admins, setAdmins] = useState([]);
 
  const [adminName, setAdminName] = useState("");
@@ -160,6 +189,8 @@ const [searchTerm, setSearchTerm] = useState("");
 const [cardFilter, setCardFilter] =
   useState("");
   const [failures, setFailures] = useState([]);
+  
+
   const filteredFailures = failures
   .filter((failure) =>
     selectedYear === "All Years"
@@ -213,13 +244,30 @@ const totalPages =
 
 const totalFailures = filteredFailures.length;
 
-// const resolvedCount = failures.filter(
-//   (f) => f.status === "Resolved"
-// ).length;
+useEffect(() => {
 
-// const openCount = failures.filter(
-//   (f) => f.status === "Open"
-// ).length;
+  let start = 0;
+
+  const duration = 1200;
+
+  const increment = totalFailures / (duration / 20);
+
+  const timer = setInterval(() => {
+
+    start += increment;
+
+    if (start >= totalFailures) {
+      setAnimatedTotal(totalFailures);
+      clearInterval(timer);
+    } else {
+      setAnimatedTotal(Math.floor(start));
+    }
+
+  }, 20);
+
+  return () => clearInterval(timer);
+
+}, [totalFailures]);
 
 const scadaCount = filteredFailures.filter(
   (f) => f.gear === "SCADA"
@@ -310,7 +358,7 @@ const deleteAdmin = async (id) => {
 
 const addFailure = async () => {
   if (!asset || !location || !section || !gear) {
-    alert("Please fill all fields");
+   toast.error("Please fill all fields!");
     return;
   }
 
@@ -349,10 +397,10 @@ setLocation("");
 setSection("");
 setGear("");
 
-    alert("Failure Added Successfully");
+toast.success("New failure has been added successfully.");
   } catch (error) {
     console.error(error);
-    alert("Error Adding Failure");
+    toast.error("Failed to add failure!");
   }
 };
 const uploadExcel = async () => {
@@ -1002,6 +1050,7 @@ failure.status
   <div
     className="card total"
     onClick={() => {
+      
       setCardFilter("");
       setCurrentPage(1);
       document
@@ -1012,7 +1061,7 @@ failure.status
     }}
   >
     <h3>Total Failures</h3>
-    <p>{totalFailures}</p>
+    <p>{animatedTotal}</p>
   </div>
 
   <div
@@ -1069,16 +1118,28 @@ failure.status
 
   {/* Pie Chart */}
   <div className="chart-card">
-   <h2>Gear Distribution</h2>
+   <h2 className="chart-title">
+    📊 Gear Distribution
+</h2>
 
     <ResponsiveContainer width="100%" height={300}>
       <PieChart>
-        <Pie
-          data={pieData}
-          dataKey="value"
-          outerRadius={100}
-          label
-        >
+      <Pie
+  data={pieData}
+  dataKey="value"
+
+  outerRadius={100}
+
+  label
+
+  isAnimationActive={true}
+
+  animationBegin={1700}
+
+  animationDuration={1200}
+
+  animationEasing="ease-out"
+>
 
           {pieData.map((entry, index) => (
             <Cell
@@ -1088,7 +1149,32 @@ failure.status
           ))}
         </Pie>
 
-        <Tooltip />
+       <Tooltip
+    contentStyle={{
+  background: "rgba(15,23,42,.95)",
+  border: "1px solid rgba(56,189,248,.25)",
+  borderRadius: "16px",
+  padding: "12px 16px",
+  boxShadow: "0 20px 40px rgba(0,0,0,.45)",
+  backdropFilter: "blur(14px)"
+}}
+
+    labelStyle={{
+
+        color:"#38BDF8",
+
+        fontWeight:"700"
+
+    }}
+
+    itemStyle={{
+
+        color:"#fff",
+
+        fontWeight:"600"
+
+    }}
+/>
       </PieChart>
     </ResponsiveContainer>
     <div className="chart-legend">
@@ -1114,24 +1200,83 @@ failure.status
     id="asset-section"
     className="chart-card"
   >
-    <h2>Asset Failures</h2>
+  <h2 className="chart-title">
+    📈 Asset Failures
+</h2>
 
     <ResponsiveContainer width="100%" height={360}>
       <BarChart data={barData}>
         <CartesianGrid strokeDasharray="3 3" />
-      <XAxis
+   <XAxis
   dataKey="asset"
-  angle={-43}
+
+  angle={-40}
+
   textAnchor="end"
+
   interval={0}
-  height={100}
+
+  height={95}
+
+  tick={{
+      fill:"#CBD5E1",
+      fontSize:11,
+      fontWeight:500
+  }}
+
+  tickLine={false}
+
+  axisLine={{
+      stroke:"#334155"
+  }}
 />
         <YAxis />
-        <Tooltip />
-        <Bar
-          dataKey="failures"
-          fill="#38bdf8"
-        />
+     <Tooltip
+    contentStyle={{
+        background:"rgba(15,23,42,.92)",
+
+        border:"1px solid rgba(56,189,248,.35)",
+
+        borderRadius:"14px",
+
+        boxShadow:"0 15px 35px rgba(0,0,0,.35)",
+
+        backdropFilter:"blur(12px)"
+    }}
+
+    labelStyle={{
+
+        color:"#38BDF8",
+
+        fontWeight:"700"
+
+    }}
+
+    itemStyle={{
+
+        color:"#fff",
+
+        fontWeight:"600"
+
+    }}
+/>
+      <Bar
+  dataKey="failures"
+  fill="#38bdf8"
+  activeBar={{
+    fill:"#67E8F9",
+    stroke:"#ffffff",
+    strokeWidth:2
+}}
+
+  isAnimationActive={true}
+
+  animationBegin={2500}
+
+  animationDuration={1400}
+
+  animationEasing="ease-out"
+/>
       </BarChart>
     </ResponsiveContainer>
   </div>
@@ -1361,11 +1506,13 @@ setAssetSuggestions(matches);
 {loading && <h3>Loading Failures...</h3>}
 <div
   id="failure-section"
-className="table-section">
+  className="table-section"
+>
   <h2>Telecom Failures</h2>
 
-       
-          <table>
+  <div className="table-wrapper">
+
+    <table>
             <thead>
             <tr>
              <th>SN</th>
@@ -1381,7 +1528,7 @@ className="table-section">
   Status
 </th>
 
-<th>Actions</th>
+<th className="actions-column">Actions</th>
 </tr>
             </thead>
 
@@ -1408,11 +1555,9 @@ className="table-section">
 
 <td>{failure.section || "-"}</td>
 
-<td>
+<td className="date-cell">
   {failure.date
-    ? new Date(
-        failure.date
-      ).toLocaleDateString(
+    ? new Date(failure.date).toLocaleDateString(
         "en-GB",
         {
           day: "2-digit",
@@ -1423,7 +1568,7 @@ className="table-section">
     : "-"}
 </td>
 
-<td>
+<td className="date-cell">
   {failure.closingDate
     ? new Date(failure.closingDate).toLocaleDateString(
         "en-GB",
@@ -1450,25 +1595,17 @@ className="table-section">
   </span>
 </td>
 
-      <td>
+     <td className="action-cell">
   {isAdmin && (
-    <>
-      <button
-        onClick={() => updateStatus(failure._id)}
-        style={{
-          padding: "5px 10px",
-          marginRight: "8px",
-          background: "#22c55e",
-          border: "none",
-          borderRadius: "5px",
-          color: "white",
-          cursor: "pointer",
-        }}
-      >
-        Update
-      </button>
+   <div className="action-buttons">
+     <button
+  className="action-btn update-btn"
+  onClick={() => updateStatus(failure._id)}
+>
+  📝 Update
+</button>
 <button
-  className="view-btn"
+  className="action-btn view-btn"
   onClick={() => {
     console.log("Failure Object:", failure);
     setSelectedFailure(failure);
@@ -1478,23 +1615,16 @@ className="table-section">
 </button>
 
       <button
-        onClick={() => {
-  if (window.confirm("Delete this failure?")) {
-    deleteFailure(failure._id);
-  }
-}}
-        style={{
-          padding: "5px 10px",
-          background: "#ef4444",
-          border: "none",
-          borderRadius: "5px",
-          color: "white",
-          cursor: "pointer",
-        }}
-      >
-        Delete
-      </button>
-    </>
+  className="action-btn delete-btn"
+  onClick={() => {
+    if (window.confirm("Delete this failure?")) {
+      deleteFailure(failure._id);
+    }
+  }}
+>
+   🗑 Delete
+</button>
+    </div>
   )}
 </td>
     </tr>
@@ -1502,7 +1632,12 @@ className="table-section">
   )}
 </tbody>
           </table>
-          <div className="pagination">
+
+
+
+</div> {/* table-wrapper */}
+
+<div className="pagination">
 
   <button
     disabled={currentPage === 1}
@@ -1536,7 +1671,12 @@ className="table-section">
         </div>
         {selectedFailure && (
   <div className="modal-overlay">
-    <div className="modal">
+   <div
+  className="modal"
+  onMouseMove={handleMove}
+  onMouseLeave={handleLeave}
+>
+  <div className="modal-content">
 
     <h2>Failure Details</h2>
 <hr />
@@ -1611,6 +1751,7 @@ className="table-section">
       </button>
 
     </div>
+    </div>   
   </div>
 )}
       </div>
