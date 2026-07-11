@@ -831,6 +831,12 @@ if (showSplash) {
 )}
 {showAdminPanel && isAdmin && (
   <div className="admin-panel">
+      <button
+      className="admin-close-btn"
+      onClick={() => setShowAdminPanel(false)}
+    >
+      ✕
+    </button>
     <h2>👤 Admin Control Center</h2>
 
     <div className="admin-card">

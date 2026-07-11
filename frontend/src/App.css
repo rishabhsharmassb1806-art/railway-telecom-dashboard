@@ -2083,3 +2083,31 @@ transition:
       box-shadow:0 6px 15px rgba(0,0,0,.25);
 
 }
+.admin-panel{
+  position: relative;
+}
+
+.admin-close-btn{
+  position: absolute;
+  top: 20px;
+  right: 25px;
+
+  width: 42px;
+  height: 42px;
+
+  border: none;
+  border-radius: 10px;
+
+  background: rgba(255, 255, 255, 0.08);
+  color: white;
+
+  font-size: 22px;
+  cursor: pointer;
+
+  transition: 0.25s ease;
+}
+
+.admin-close-btn:hover{
+  background: #ef4444;
+  transform: scale(1.05);
+}
