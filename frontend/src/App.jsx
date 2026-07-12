@@ -734,7 +734,8 @@ if (showSplash) {
   onClick={() => setShowHelpDesk(true)}
   style={{ cursor: "pointer" }}
 >
-  🆘 Help desk
+  🔗 Railway Connect
+
 </li>
 <div id="report-section">
            <button
@@ -1761,39 +1762,106 @@ setAssetSuggestions(matches);
   </div>
 )}
       </div>
-      {showHelpDesk && (
+     {showHelpDesk && (
   <div className="modal-overlay">
-    <div className="modal">
-      <h2>🆘 Railway Help Desk</h2>
+    <div className="modal railway-connect-modal">
 
-      <p>
-        <strong>Toll Free:</strong>
-        139
-      </p>
+     
 
-      <p>
-        <strong>RailMadad:</strong>
-        1800-111-321
-      </p>
+        <h2>🔗 Railway Connect</h2>
 
-      <p>
-        <strong>Email:</strong>
-        railmadad@rb.railnet.gov.in
-      </p>
+        <p className="connect-subtitle">
+          Official railway resources and support
+        </p>
 
-      <p>
-        <strong>Emergency:</strong>
-        182
-      </p>
+        <h3>🚆 Official Resources</h3>
 
-      <button
-        onClick={() =>
-          setShowHelpDesk(false)
-        }
-      >
-        Close
-      </button>
-    </div>
+        <div className="connect-links">
+
+        
+       <a
+  href="https://nwr.indianrailways.gov.in/view_section.jsp?id=0%2C1%2C291%2C355&lang=0"
+  target="_blank"
+  rel="noopener noreferrer"
+>
+  🚆 Jodhpur Division
+</a>
+
+<a
+  href="https://railmadad.indianrailways.gov.in/"
+  target="_blank"
+  rel="noopener noreferrer"
+>
+  🆘 RailMadad
+</a>
+
+<a
+  href="https://enquiry.indianrail.gov.in/ntes/"
+  target="_blank"
+  rel="noopener noreferrer"
+>
+  🔍 Train Enquiry
+</a>
+
+<a
+  href="https://nwr.indianrailways.gov.in/uploads/files/1743502836937-Telephone%20Directory%20Updated%20as%20on%2031.03.2025.pdf"
+  target="_blank"
+  rel="noopener noreferrer"
+>
+  📖 NWR Telephone Directory
+</a>
+
+
+        </div>
+
+        <h3>☎️ Contact & Support</h3>
+
+        <div className="connect-support">
+<div className="support-item">
+  <span>☎️ Railway Helpline</span>
+  <strong>139</strong>
+</div>
+
+<div className="support-item">
+  <span>🚨 Jodhpur Emergency Control</span>
+  <strong>9001198916</strong>
+</div>
+
+<div className="support-item">
+  <span>🏢 DRM Jodhpur Division</span>
+  <strong>9001198000</strong>
+</div>
+
+<div className="support-item">
+  <span>📢 PRO Jodhpur Division</span>
+  <strong>9001198003</strong>
+</div>
+<div className="support-item email-item">
+  <span>📧 Station Director JU</span>
+
+  <a href="mailto:stationdirector@ju.railnet.gov.in">
+    stationdirector@ju.railnet.gov.in
+  </a>
+</div>
+
+<div className="support-item email-item">
+  <span>📧 Dy. CE / EnHM</span>
+
+  <a href="mailto:dycenhm@nwr.railnet.gov.in">
+    dycenhm@nwr.railnet.gov.in
+  </a>
+</div>
+        </div>
+
+        <button
+          onClick={() => setShowHelpDesk(false)}
+        >
+          Close
+        </button>
+
+      </div>
+
+    
   </div>
 )}
 {showSettings && (
