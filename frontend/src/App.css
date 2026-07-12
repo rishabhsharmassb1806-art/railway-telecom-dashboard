@@ -2231,3 +2231,43 @@ transition:
 .railway-connect-modal::after {
   display: none;
 }
+/* ===== LIGHT MODE CONTRAST FIX ===== */
+
+.light-theme .admin-name {
+  color: #ffffff !important;
+}
+
+.light-theme .admin-item span {
+  color: #ffffff !important;
+}
+
+.light-theme .legend-item {
+  color: #0f172a !important;
+}
+
+.light-theme .recharts-cartesian-axis-tick-value {
+  fill: #475569 !important;
+}
+
+.light-theme .recharts-tooltip-wrapper span,
+.light-theme .recharts-tooltip-wrapper p {
+  color: #ffffff !important;
+}
+
+.light-theme .section-badge {
+  color: #ffffff !important;
+}
+
+.light-theme .status-badge {
+  color: #ffffff !important;
+}
+.light-theme .admin-close-btn{
+  background:#e2e8f0 !important;
+  color:#0f172a !important;
+  z-index:100;
+}
+
+.light-theme .admin-close-btn:hover{
+  background:#ef4444 !important;
+  color:white !important;
+}

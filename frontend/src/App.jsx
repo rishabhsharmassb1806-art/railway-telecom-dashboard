@@ -1224,12 +1224,11 @@ failure.status
   interval={0}
 
   height={95}
-
-  tick={{
-      fill:"#CBD5E1",
-      fontSize:11,
-      fontWeight:500
-  }}
+tick={{
+  fill: darkMode ? "#CBD5E1" : "#475569",
+  fontSize: 11,
+  fontWeight: 500,
+}}
 
   tickLine={false}
 
@@ -1237,7 +1236,15 @@ failure.status
       stroke:"#334155"
   }}
 />
-        <YAxis />
+   <YAxis
+  tick={{
+    fill: darkMode ? "#CBD5E1" : "#475569",
+    fontSize: 12,
+  }}
+  axisLine={{
+    stroke: darkMode ? "#334155" : "#94a3b8",
+  }}
+/>
      <Tooltip
     contentStyle={{
         background:"rgba(15,23,42,.92)",
